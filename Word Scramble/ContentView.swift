@@ -17,6 +17,15 @@ struct ContentView: View {
     @State private var rootWord = ""
     @State private var newWord = ""
     
+    var score:Int{
+        var m = 0
+        for k in usedWords{
+            m += k.count
+        }
+        return m
+    }
+    
+    
     func addNewWord() {
         // lowercase and trim the word, to make sure we don't add duplicate words with case differences
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
@@ -68,7 +77,8 @@ struct ContentView: View {
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
 
-        return misspelledRange.location == NSNotFound
+        
+        return misspelledRange.location == NSNotFound && word.count > 2
     }
     
     func wordError(title: String, message: String) {
@@ -109,12 +119,16 @@ struct ContentView: View {
                     Image(systemName: "\($0.count).circle")
                     Text($0)
                 }
+                
+                Text("Score: \(score)")
             }
             .navigationBarTitle(rootWord)
+            .navigationBarItems(leading: Button("Start Game", action: startGame))
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError) {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
             }
+            
 
         }
 
